@@ -5,24 +5,28 @@ import (
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/models"
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
-	"log"
 	"testing"
 )
 
-var db *sqlx.DB
 var ur *repository.UsersRepository
 
-func teardown() {
+func teardown(t *testing.T, db *sqlx.DB) {
 	if db != nil {
-		db.Exec("DROP TABLE IF EXISTS users")
+		_, err := db.Exec("DROP TABLE users CASCADE")
+		if err != nil {
+			t.Errorf("Failed to drop test table: %v", err)
+		}
 		db.Close()
 	}
 }
 
-func setup() {
-	db = SetUpTestDD()
+func setup(t *testing.T) *sqlx.DB {
+	db, err := SetUpTestDD()
+	if err != nil {
+		t.Fatalf("Failed to create test table: %v", err)
+	}
 	ur = repository.NewUsersRepository(db)
-	_, err := db.Exec(`
+	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS users (
 			id SERIAL PRIMARY KEY,
 			name TEXT NOT NULL,
@@ -30,13 +34,14 @@ func setup() {
 		);
 	`)
 	if err != nil {
-		log.Fatalf("Failed to create test table: %v", err)
+		t.Fatalf("Failed to create test table: %v", err)
 	}
+	return db
 }
 
 func TestUsersRepositoryCreate(t *testing.T) {
-	setup()
-	defer teardown()
+	db := setup(t)
+	defer teardown(t, db)
 	user := &models.User{
 		Name:  "testCreate",
 		Email: "testCreate",
@@ -53,8 +58,8 @@ func TestUsersRepositoryCreate(t *testing.T) {
 }
 
 func TestUsersRepositoryGet(t *testing.T) {
-	setup()
-	defer teardown()
+	db := setup(t)
+	defer teardown(t, db)
 	setUpUser := &models.User{
 		Name:  "testGet",
 		Email: "testGet",
@@ -68,8 +73,8 @@ func TestUsersRepositoryGet(t *testing.T) {
 }
 
 func TestUsersRepositoryGetAll(t *testing.T) {
-	setup()
-	defer teardown()
+	db := setup(t)
+	defer teardown(t, db)
 	setUpUsers := &[]models.User{
 		{
 			Name:  "testGetAll",
@@ -84,11 +89,11 @@ func TestUsersRepositoryGetAll(t *testing.T) {
 			Email: "testGetAll",
 		},
 	}
-	ids := make([]uint, len(*setUpUsers))
+	ids := make([]int, 0, len(*setUpUsers))
 
 	for _, user := range *setUpUsers {
 		id, _ := ur.Create(&user)
-		ids = append(ids, uint(id))
+		ids = append(ids, id)
 	}
 	users, err := ur.GetAll()
 	assert.NoError(t, err)
@@ -98,29 +103,29 @@ func TestUsersRepositoryGetAll(t *testing.T) {
 }
 
 func TestUsersRepositoryUpdate(t *testing.T) {
-	setup()
-	defer teardown()
+	db := setup(t)
+	defer teardown(t, db)
 	user := &models.User{
 		Name:  "testUpdate",
 		Email: "testUpdate",
 	}
 	id, _ := ur.Create(user)
 
-	updated := "_updated"
-	userInput := models.UserInput{
-		Name:  &updated,
-		Email: &updated,
+	const updated = "_updated"
+	userInput := models.User{
+		Name:  updated,
+		Email: updated,
 	}
 	err := ur.Update(id, &userInput)
 	assert.NoError(t, err)
 	updatedUser, _ := ur.Get(id)
-	assert.Equal(t, *userInput.Name, updatedUser.Name)
-	assert.Equal(t, *userInput.Email, updatedUser.Email)
+	assert.Equal(t, userInput.Name, updatedUser.Name)
+	assert.Equal(t, userInput.Email, updatedUser.Email)
 }
 
 func TestUsersRepositoryDelete(t *testing.T) {
-	setup()
-	defer teardown()
+	db := setup(t)
+	defer teardown(t, db)
 	user := &models.User{
 		Name:  "test",
 		Email: "test",
