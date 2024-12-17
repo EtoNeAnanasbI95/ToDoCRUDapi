@@ -35,8 +35,8 @@ func (ur *UsersRepository) Create(user *models.User) (int, error) {
 
 func (ur *UsersRepository) Get(id int) (models.User, error) {
 	var user models.User
-	query := fmt.Sprintf("SELECT * FROM %s WHERE id == $1", usersTable)
-	if err := ur.db.Select(&user, query, id); err != nil {
+	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", usersTable)
+	if err := ur.db.Get(&user, query, id); err != nil {
 		return user, err
 	}
 	return user, nil
@@ -51,19 +51,19 @@ func (ur *UsersRepository) GetAll() ([]models.User, error) {
 	return users, nil
 }
 
-func (ur *UsersRepository) Update(id int, user *models.UserInput) error {
-	setValues := make([]string, 2)
-	args := make([]interface{}, 2)
+func (ur *UsersRepository) Update(id int, user *models.User) error {
+	setValues := make([]string, 0, 2)
+	args := make([]interface{}, 0, 2)
 	argsId := 1
-	if user.Name != nil {
+	if user.Name != "" {
 		setValues = append(setValues, fmt.Sprintf("name = $%d", argsId))
 		argsId++
-		args = append(args, *user.Name)
+		args = append(args, user.Name)
 	}
-	if user.Email != nil {
+	if user.Email != "" {
 		setValues = append(setValues, fmt.Sprintf("email = $%d", argsId))
 		argsId++
-		args = append(args, *user.Email)
+		args = append(args, user.Email)
 	}
 	setQuery := fmt.Sprintf("UPDATE %s SET %s WHERE id = $%d", usersTable, strings.Join(setValues, ", "), argsId)
 	args = append(args, id)
@@ -77,11 +77,11 @@ func (ur *UsersRepository) Update(id int, user *models.UserInput) error {
 		tx.Rollback()
 		return err
 	}
-	return nil
+	return tx.Commit()
 }
 
 func (ur *UsersRepository) Delete(id int) error {
-	query := fmt.Sprintf("DELETE FROM %s WHERE id == $1", usersTable)
+	query := fmt.Sprintf("DELETE FROM %s WHERE id = $1", usersTable)
 	_, err := ur.db.Exec(query, id)
 	return err
 }
