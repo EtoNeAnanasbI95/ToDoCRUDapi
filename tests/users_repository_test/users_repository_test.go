@@ -1,31 +1,27 @@
-package tests
+package users_repository_test
 
 import (
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/repository"
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/models"
+	"github.com/EtoNeAnanasbI95/ToDoCRUD/tests"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
 )
 
 var ur *repository.UsersRepository
 
-func TestMainUsersRepo(m *testing.M) {
-	tableName = "users"
-	query = `
-	CREATE TABLE IF NOT EXISTS tasks (
-		id SERIAL PRIMARY KEY,
-		name TEXT NOT NULL,
-		description TEXT NOT NULL,
-		is_completed BOOLEAN DEFAULT FALSE
+const tableName = "users"
+const query = `
+	CREATE TABLE IF NOT EXISTS users
+	(
+		id    SERIAL PRIMARY KEY,
+		name  TEXT NOT NULL,
+		email TEXT NOT NULL UNIQUE
 	);`
-	code := m.Run()
-	os.Exit(code)
-}
 
 func TestUsersRepositoryCreate(t *testing.T) {
-	db := Setup(t, query, &ur, repository.NewUsersRepository)
-	defer Teardown(t, db, tableName)
+	db := tests.Setup(t, query, &ur, repository.NewUsersRepository)
+	defer tests.Teardown(t, db, tableName)
 	user := &models.User{
 		Name:  "testCreate",
 		Email: "testCreate",
@@ -42,8 +38,8 @@ func TestUsersRepositoryCreate(t *testing.T) {
 }
 
 func TestUsersRepositoryGet(t *testing.T) {
-	db := Setup(t, query, &ur, repository.NewUsersRepository)
-	defer Teardown(t, db, tableName)
+	db := tests.Setup(t, query, &ur, repository.NewUsersRepository)
+	defer tests.Teardown(t, db, tableName)
 	setUpUser := &models.User{
 		Name:  "testGet",
 		Email: "testGet",
@@ -57,8 +53,8 @@ func TestUsersRepositoryGet(t *testing.T) {
 }
 
 func TestUsersRepositoryGetAll(t *testing.T) {
-	db := Setup(t, query, &ur, repository.NewUsersRepository)
-	defer Teardown(t, db, tableName)
+	db := tests.Setup(t, query, &ur, repository.NewUsersRepository)
+	defer tests.Teardown(t, db, tableName)
 	setUpUsers := &[]models.User{
 		{
 			Name:  "testGetAll",
@@ -87,8 +83,8 @@ func TestUsersRepositoryGetAll(t *testing.T) {
 }
 
 func TestUsersRepositoryUpdate(t *testing.T) {
-	db := Setup(t, query, &ur, repository.NewUsersRepository)
-	defer Teardown(t, db, tableName)
+	db := tests.Setup(t, query, &ur, repository.NewUsersRepository)
+	defer tests.Teardown(t, db, tableName)
 	user := &models.User{
 		Name:  "testUpdate",
 		Email: "testUpdate",
@@ -108,8 +104,8 @@ func TestUsersRepositoryUpdate(t *testing.T) {
 }
 
 func TestUsersRepositoryDelete(t *testing.T) {
-	db := Setup(t, query, &ur, repository.NewUsersRepository)
-	defer Teardown(t, db, tableName)
+	db := tests.Setup(t, query, &ur, repository.NewUsersRepository)
+	defer tests.Teardown(t, db, tableName)
 	user := &models.User{
 		Name:  "test",
 		Email: "test",
