@@ -1,123 +1,118 @@
-package tests
+package tasks_repository_test
 
 import (
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/repository"
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/models"
+	"github.com/EtoNeAnanasbI95/ToDoCRUD/tests"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
 )
 
 var tr *repository.TasksRepository
 
-func TestMain(m *testing.M) {
-	tableName = "users"
-	query = `
+const tableName = "tasks"
+const query = `
 	CREATE TABLE IF NOT EXISTS tasks (
 		id SERIAL PRIMARY KEY,
 		name TEXT NOT NULL,
 		description TEXT NOT NULL,
 		is_completed BOOLEAN DEFAULT FALSE
 	);`
-	code := m.Run()
-	os.Exit(code)
-}
 
 func TestTasksRepositoryCreate(t *testing.T) {
-	db := Setup(t, query, &tr, repository.NewTasksRepository)
-	defer Teardown(t, db, tableName)
-	user := &models.User{
-		Name:  "testCreate",
-		Email: "testCreate",
+	db := tests.Setup(t, query, &tr, repository.NewTasksRepository)
+	defer tests.Teardown(t, db, tableName)
+	task := &models.Task{
+		Name:        "testCreate",
+		Description: "testCreate",
 	}
-	id, err := ur.Create(user)
+	id, err := tr.Create(task)
 	assert.NoError(t, err)
 	assert.NotZero(t, id)
 
-	var createdUser models.User
-	err = db.Get(&createdUser, "SELECT * FROM tasks WHERE id=$1", id)
+	var createdTask models.Task
+	err = db.Get(&createdTask, "SELECT * FROM tasks WHERE id=$1", id)
 	assert.NoError(t, err)
-	assert.Equal(t, user.Email, createdUser.Email)
-	assert.Equal(t, user.Name, createdUser.Name)
+	assert.Equal(t, task.Name, createdTask.Name)
+	assert.Equal(t, task.Description, createdTask.Description)
 }
 
 func TestTasksRepositoryGet(t *testing.T) {
-	db := Setup(t, query, &tr, repository.NewTasksRepository)
-	defer Teardown(t, db, tableName)
-	setUpUser := &models.User{
-		Name:  "testGet",
-		Email: "testGet",
+	db := tests.Setup(t, query, &tr, repository.NewTasksRepository)
+	defer tests.Teardown(t, db, tableName)
+	setUpModel := &models.Task{
+		Name:        "testCreate",
+		Description: "testCreate",
 	}
-	id, _ := ur.Create(setUpUser)
-	user, err := ur.Get(id)
+	id, _ := tr.Create(setUpModel)
+	get, err := tr.Get(id)
 	assert.NoError(t, err)
-	assert.NotNil(t, user)
-	assert.Equal(t, setUpUser.Name, user.Name)
-	assert.Equal(t, setUpUser.Email, user.Email)
+	assert.NotNil(t, setUpModel)
+	assert.Equal(t, setUpModel.Name, get.Name)
 }
 
 func TestTasksRepositoryGetAll(t *testing.T) {
-	db := Setup(t, query, &tr, repository.NewTasksRepository)
-	defer Teardown(t, db, tableName)
-	setUpTasks := &[]models.User{
+	db := tests.Setup(t, query, &tr, repository.NewTasksRepository)
+	defer tests.Teardown(t, db, tableName)
+	setUpModels := &[]models.Task{
 		{
-			Name:  "testGetAll",
-			Email: "testGetAll",
+			Name:        "testGetAll",
+			Description: "testGetAll",
 		},
 		{
-			Name:  "testGetAll",
-			Email: "testGetAll",
+			Name:        "testGetAll",
+			Description: "testGetAll",
 		},
 		{
-			Name:  "testGetAll",
-			Email: "testGetAll",
+			Name:        "testGetAll",
+			Description: "testGetAll",
 		},
 	}
-	ids := make([]int, 0, len(*setUpTasks))
+	ids := make([]int, 0, len(*setUpModels))
 
-	for _, user := range *setUpTasks {
-		id, _ := ur.Create(&user)
+	for _, model := range *setUpModels {
+		id, _ := tr.Create(&model)
 		ids = append(ids, id)
 	}
-	users, err := ur.GetAll()
+	models, err := tr.GetAll()
 	assert.NoError(t, err)
-	for index, _ := range users {
-		assert.Equal(t, users[index].Id, ids[index])
+	for index := range models {
+		assert.Equal(t, models[index].Id, ids[index])
 	}
 }
 
 func TestTasksRepositoryUpdate(t *testing.T) {
-	db := Setup(t, query, &tr, repository.NewTasksRepository)
-	defer Teardown(t, db, tableName)
-	user := &models.User{
-		Name:  "testUpdate",
-		Email: "testUpdate",
+	db := tests.Setup(t, query, &tr, repository.NewTasksRepository)
+	defer tests.Teardown(t, db, tableName)
+	model := &models.Task{
+		Name:        "testCreate",
+		Description: "testCreate",
 	}
-	id, _ := ur.Create(user)
+	id, _ := tr.Create(model)
 
 	const updated = "_updated"
-	userInput := models.User{
-		Name:  updated,
-		Email: updated,
+	modelInput := models.Task{
+		Name:        updated,
+		Description: updated,
 	}
-	err := ur.Update(id, &userInput)
+	err := tr.Update(id, &modelInput)
 	assert.NoError(t, err)
-	updatedUser, _ := ur.Get(id)
-	assert.Equal(t, userInput.Name, updatedUser.Name)
-	assert.Equal(t, userInput.Email, updatedUser.Email)
+	updatedUser, err := tr.Get(id)
+	assert.NoError(t, err)
+	assert.Equal(t, modelInput.Name, updatedUser.Name)
 }
 
 func TestTasksRepositoryDelete(t *testing.T) {
-	db := Setup(t, query, &tr, repository.NewTasksRepository)
-	defer Teardown(t, db, tableName)
-	user := &models.User{
-		Name:  "test",
-		Email: "test",
+	db := tests.Setup(t, query, &tr, repository.NewTasksRepository)
+	defer tests.Teardown(t, db, tableName)
+	model := &models.Task{
+		Name:        "test",
+		Description: "test",
 	}
-	id, _ := ur.Create(user)
+	id, _ := tr.Create(model)
 
-	err := ur.Delete(id)
+	err := tr.Delete(id)
 	assert.NoError(t, err)
-	_, err = ur.Get(id)
+	_, err = tr.Get(id)
 	assert.Error(t, err)
 }
