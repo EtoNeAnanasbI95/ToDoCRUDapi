@@ -23,7 +23,7 @@ func (ur *TasksRepository) Create(task *models.Task) (int, error) {
 		return 0, err
 	}
 	var taskId int
-	createTaskQuery := fmt.Sprintf("INSERT INTO %s (name, description, is_completed) VALUES ($1, $2, $3) RETURNING id)", tasksTable)
+	createTaskQuery := fmt.Sprintf("INSERT INTO %s (name, description, is_completed) VALUES ($1, $2, $3) RETURNING id", tasksTable)
 	row := tx.QueryRow(createTaskQuery, task.Name, task.Description, task.IsCompleted)
 	err = row.Scan(&taskId)
 	if err != nil {
@@ -35,8 +35,8 @@ func (ur *TasksRepository) Create(task *models.Task) (int, error) {
 
 func (ur *TasksRepository) Get(id int) (models.Task, error) {
 	var task models.Task
-	query := fmt.Sprintf("SELECT * FROM %s WHERE id == $1", tasksTable)
-	if err := ur.db.Select(&task, query, id); err != nil {
+	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", tasksTable)
+	if err := ur.db.Get(&task, query, id); err != nil {
 		return task, err
 	}
 	return task, nil
@@ -51,25 +51,26 @@ func (ur *TasksRepository) GetAll() ([]models.Task, error) {
 	return tasks, nil
 }
 
-func (ur *TasksRepository) Update(id int, task *models.TaskInput) error {
-	setValues := make([]string, 2)
-	args := make([]interface{}, 2)
+func (ur *TasksRepository) Update(id int, task *models.Task) error {
+	setValues := make([]string, 0, 2)
+	args := make([]interface{}, 0, 2)
 	argsId := 1
-	if task.Name != nil {
+	if task.Name != "" {
 		setValues = append(setValues, fmt.Sprintf("name = $%d", argsId))
 		argsId++
-		args = append(args, *task.Name)
+		args = append(args, task.Name)
 	}
-	if task.Description != nil {
+	if task.Description != "" {
 		setValues = append(setValues, fmt.Sprintf("description = $%d", argsId))
 		argsId++
-		args = append(args, *task.Description)
+		args = append(args, task.Description)
 	}
-	if task.IsCompleted != nil {
-		setValues = append(setValues, fmt.Sprintf("is_completed  = $%d", argsId))
-		argsId++
-		args = append(args, *task.IsCompleted)
-	}
+	// TODO: придумать как регистрировать обновление поля IsCompleted
+	//if task.IsCompleted != nil {
+	//	setValues = append(setValues, fmt.Sprintf("is_completed  = $%d", argsId))
+	//	argsId++
+	//	args = append(args, task.IsCompleted)
+	//}
 
 	setQuery := fmt.Sprintf("UPDATE %s SET %s WHERE id = $%d", tasksTable, strings.Join(setValues, ", "), argsId)
 	args = append(args, id)
@@ -83,11 +84,11 @@ func (ur *TasksRepository) Update(id int, task *models.TaskInput) error {
 		tx.Rollback()
 		return err
 	}
-	return nil
+	return tx.Commit()
 }
 
 func (ur *TasksRepository) Delete(id int) error {
-	query := fmt.Sprintf("DELETE FROM %s WHERE id == $1", tasksTable)
+	query := fmt.Sprintf("DELETE FROM %s WHERE id = $1", tasksTable)
 	_, err := ur.db.Exec(query, id)
 	return err
 }
