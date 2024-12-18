@@ -3,54 +3,28 @@ package tests
 import (
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/repository"
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/models"
-	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
 
-var ur *repository.UsersRepository
+var tr *repository.TasksRepository
 
-func teardown(t *testing.T, db *sqlx.DB) {
-	if db != nil {
-		_, err := db.Exec("DROP TABLE users CASCADE")
-		if err != nil {
-			t.Errorf("Failed to drop test table: %v", err)
-		}
-		db.Close()
-	}
-}
-
-func setup(t *testing.T) *sqlx.DB {
-	db, err := SetUpTestDD()
-	if err != nil {
-		t.Fatalf("Failed to create test table: %v", err)
-	}
-	ur = repository.NewUsersRepository(db)
-	_, err = db.Exec(`
-		CREATE TABLE IF NOT EXISTS users (
-			id SERIAL PRIMARY KEY,
-			name TEXT NOT NULL,
-			email TEXT NOT NULL
-		);
-	`)
-	if err != nil {
-		t.Fatalf("Failed to create test table: %v", err)
-	}
-	return db
-}
-
-func TestUsersRepositoryCreate(t *testing.T) {
-	//db := setup(t)
-	//defer teardown(t, db)
-	const tableName = "users"
-	query := `
-	CREATE TABLE IF NOT EXISTS users (
+func TestMain(m *testing.M) {
+	tableName = "users"
+	query = `
+	CREATE TABLE IF NOT EXISTS tasks (
 		id SERIAL PRIMARY KEY,
 		name TEXT NOT NULL,
-		email TEXT NOT NULL
+		description TEXT NOT NULL,
+		is_completed BOOLEAN DEFAULT FALSE
 	);`
-	var ur *repository.UsersRepository
-	db := Setup(t, query, &ur, repository.NewUsersRepository)
+	code := m.Run()
+	os.Exit(code)
+}
+
+func TestTasksRepositoryCreate(t *testing.T) {
+	db := Setup(t, query, &tr, repository.NewTasksRepository)
 	defer Teardown(t, db, tableName)
 	user := &models.User{
 		Name:  "testCreate",
@@ -61,15 +35,15 @@ func TestUsersRepositoryCreate(t *testing.T) {
 	assert.NotZero(t, id)
 
 	var createdUser models.User
-	err = db.Get(&createdUser, "SELECT * FROM users WHERE id=$1", id)
+	err = db.Get(&createdUser, "SELECT * FROM tasks WHERE id=$1", id)
 	assert.NoError(t, err)
 	assert.Equal(t, user.Email, createdUser.Email)
 	assert.Equal(t, user.Name, createdUser.Name)
 }
 
-func TestUsersRepositoryGet(t *testing.T) {
-	db := setup(t)
-	defer teardown(t, db)
+func TestTasksRepositoryGet(t *testing.T) {
+	db := Setup(t, query, &tr, repository.NewTasksRepository)
+	defer Teardown(t, db, tableName)
 	setUpUser := &models.User{
 		Name:  "testGet",
 		Email: "testGet",
@@ -82,10 +56,10 @@ func TestUsersRepositoryGet(t *testing.T) {
 	assert.Equal(t, setUpUser.Email, user.Email)
 }
 
-func TestUsersRepositoryGetAll(t *testing.T) {
-	db := setup(t)
-	defer teardown(t, db)
-	setUpUsers := &[]models.User{
+func TestTasksRepositoryGetAll(t *testing.T) {
+	db := Setup(t, query, &tr, repository.NewTasksRepository)
+	defer Teardown(t, db, tableName)
+	setUpTasks := &[]models.User{
 		{
 			Name:  "testGetAll",
 			Email: "testGetAll",
@@ -99,9 +73,9 @@ func TestUsersRepositoryGetAll(t *testing.T) {
 			Email: "testGetAll",
 		},
 	}
-	ids := make([]int, 0, len(*setUpUsers))
+	ids := make([]int, 0, len(*setUpTasks))
 
-	for _, user := range *setUpUsers {
+	for _, user := range *setUpTasks {
 		id, _ := ur.Create(&user)
 		ids = append(ids, id)
 	}
@@ -112,9 +86,9 @@ func TestUsersRepositoryGetAll(t *testing.T) {
 	}
 }
 
-func TestUsersRepositoryUpdate(t *testing.T) {
-	db := setup(t)
-	defer teardown(t, db)
+func TestTasksRepositoryUpdate(t *testing.T) {
+	db := Setup(t, query, &tr, repository.NewTasksRepository)
+	defer Teardown(t, db, tableName)
 	user := &models.User{
 		Name:  "testUpdate",
 		Email: "testUpdate",
@@ -133,9 +107,9 @@ func TestUsersRepositoryUpdate(t *testing.T) {
 	assert.Equal(t, userInput.Email, updatedUser.Email)
 }
 
-func TestUsersRepositoryDelete(t *testing.T) {
-	db := setup(t)
-	defer teardown(t, db)
+func TestTasksRepositoryDelete(t *testing.T) {
+	db := Setup(t, query, &tr, repository.NewTasksRepository)
+	defer Teardown(t, db, tableName)
 	user := &models.User{
 		Name:  "test",
 		Email: "test",

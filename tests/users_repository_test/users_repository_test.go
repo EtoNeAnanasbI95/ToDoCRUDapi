@@ -4,18 +4,24 @@ import (
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/repository"
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/models"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
 
 var ur *repository.UsersRepository
 
-const tableName = "users"
-const query = `
-	CREATE TABLE IF NOT EXISTS users (
+func TestMainUsersRepo(m *testing.M) {
+	tableName = "users"
+	query = `
+	CREATE TABLE IF NOT EXISTS tasks (
 		id SERIAL PRIMARY KEY,
 		name TEXT NOT NULL,
-		email TEXT NOT NULL
+		description TEXT NOT NULL,
+		is_completed BOOLEAN DEFAULT FALSE
 	);`
+	code := m.Run()
+	os.Exit(code)
+}
 
 func TestUsersRepositoryCreate(t *testing.T) {
 	db := Setup(t, query, &ur, repository.NewUsersRepository)

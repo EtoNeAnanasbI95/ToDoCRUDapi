@@ -9,6 +9,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
+var tableName = "users"
+var query = `
+	CREATE TABLE IF NOT EXISTS users (
+		id SERIAL PRIMARY KEY,
+		name TEXT NOT NULL,
+		email TEXT NOT NULL
+	);`
+
 func SetUpTestDD() (*sqlx.DB, error) {
 	dsn := os.Getenv("TEST_DB_DSN")
 	db, err := sqlx.Connect("postgres", dsn)
