@@ -27,7 +27,7 @@ func (ur *TasksRepository) Create(task *models.Task) (int, error) {
 	row := tx.QueryRow(createTaskQuery, task.Name, task.Description, task.IsCompleted)
 	err = row.Scan(&taskId)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return 0, err
 	}
 	return taskId, tx.Commit()
@@ -81,7 +81,7 @@ func (ur *TasksRepository) Update(id int, task *models.Task) error {
 	}
 	_, err = tx.Exec(setQuery, args...)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return err
 	}
 	return tx.Commit()

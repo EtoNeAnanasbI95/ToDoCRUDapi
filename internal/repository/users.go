@@ -27,7 +27,7 @@ func (ur *UsersRepository) Create(user *models.User) (int, error) {
 	row := tx.QueryRow(createUserQuery, user.Name, user.Email)
 	err = row.Scan(&userId)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return 0, err
 	}
 	return userId, tx.Commit()
@@ -74,7 +74,7 @@ func (ur *UsersRepository) Update(id int, user *models.User) error {
 	}
 	_, err = tx.Exec(setQuery, args...)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return err
 	}
 	return tx.Commit()
