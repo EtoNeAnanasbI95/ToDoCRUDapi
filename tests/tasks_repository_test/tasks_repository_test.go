@@ -89,17 +89,31 @@ func TestTasksRepositoryUpdate(t *testing.T) {
 		Description: "testCreate",
 	}
 	id, _ := tr.Create(model)
-
-	const updated = "_updated"
-	modelInput := models.Task{
-		Name:        updated,
-		Description: updated,
+	testDataName := "testName"
+	testDataDescription := "testDescription"
+	testDataIsCompleted := false
+	modelInput := &models.TaskInput{
+		Name:        &testDataName,
+		Description: &testDataDescription,
+		IsCompleted: &testDataIsCompleted,
 	}
-	err := tr.Update(id, &modelInput)
+	err := tr.Update(id, modelInput)
 	assert.NoError(t, err)
 	updatedUser, err := tr.Get(id)
 	assert.NoError(t, err)
-	assert.Equal(t, modelInput.Name, updatedUser.Name)
+	assert.Equal(t, *modelInput.Name, updatedUser.Name)
+
+	testDataName = "testName2"
+	testDataDescription = "testDescription2"
+	modelInput = &models.TaskInput{
+		Name:        &testDataName,
+		Description: &testDataDescription,
+	}
+	err = tr.Update(id, modelInput)
+	assert.NoError(t, err)
+	updatedUser, err = tr.Get(id)
+	assert.NoError(t, err)
+	assert.Equal(t, *modelInput.Name, updatedUser.Name)
 }
 
 func TestTasksRepositoryDelete(t *testing.T) {
