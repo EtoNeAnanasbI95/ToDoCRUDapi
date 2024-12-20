@@ -51,26 +51,25 @@ func (ur *TasksRepository) GetAll() ([]models.Task, error) {
 	return tasks, nil
 }
 
-func (ur *TasksRepository) Update(id int, task *models.Task) error {
+func (ur *TasksRepository) Update(id int, task *models.TaskInput) error {
 	setValues := make([]string, 0, 2)
 	args := make([]interface{}, 0, 2)
 	argsId := 1
-	if task.Name != "" {
+	if task.Name != nil {
 		setValues = append(setValues, fmt.Sprintf("name = $%d", argsId))
 		argsId++
-		args = append(args, task.Name)
+		args = append(args, *task.Name)
 	}
-	if task.Description != "" {
+	if task.Description != nil {
 		setValues = append(setValues, fmt.Sprintf("description = $%d", argsId))
 		argsId++
-		args = append(args, task.Description)
+		args = append(args, *task.Description)
 	}
-	// TODO: придумать как регистрировать обновление поля IsCompleted
-	//if task.IsCompleted != nil {
-	//	setValues = append(setValues, fmt.Sprintf("is_completed  = $%d", argsId))
-	//	argsId++
-	//	args = append(args, task.IsCompleted)
-	//}
+	if task.IsCompleted != nil {
+		setValues = append(setValues, fmt.Sprintf("is_completed  = $%d", argsId))
+		argsId++
+		args = append(args, *task.IsCompleted)
+	}
 
 	setQuery := fmt.Sprintf("UPDATE %s SET %s WHERE id = $%d", tasksTable, strings.Join(setValues, ", "), argsId)
 	args = append(args, id)

@@ -23,7 +23,7 @@ type Tasks interface {
 	Create(user *models.Task) (int, error)
 	Get(id int) (models.Task, error)
 	GetAll() ([]models.Task, error)
-	Update(id int, task *models.Task) error
+	Update(id int, task *models.TaskInput) error
 	Delete(id int) error
 }
 

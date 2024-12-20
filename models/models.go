@@ -18,3 +18,9 @@ type UsersTasks struct {
 	UserId int `db:"user_id" json:"user_id"`
 	TaskId int `db:"task_id" json:"task_id"`
 }
+
+type TaskInput struct {
+	Name        *string `json:"name"`
+	Description *string `json:"description"`
+	IsCompleted *bool   `json:"is_completed"`
+}
