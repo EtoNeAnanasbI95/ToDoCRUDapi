@@ -1,4 +1,5 @@
 CONNECTION_STRING ?= $(PGCONNECT)
+dirs = tasks_repository_test users_repository_test
 
 all: migrate run
 
@@ -19,8 +20,8 @@ run:
 	echo "приложение запускается"
 
 run-tests:
-	@echo "Running integration tests..."
-	@TEST_DB_DSN=$(TEST_DB_DSN) go test ./tests -v
+	@echo "Running tests..."
+	$(foreach dir, $(dirs), @TEST_DB_DSN=$(TEST_DB_DSN) go test "./tests/$(dir)" -v)
 
 clean:
 	@unset PG_USER PG_PASSWORD
