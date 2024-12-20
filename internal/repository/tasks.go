@@ -33,13 +33,13 @@ func (ur *TasksRepository) Create(task *models.Task) (int, error) {
 	return taskId, tx.Commit()
 }
 
-func (ur *TasksRepository) Get(id int) (models.Task, error) {
+func (ur *TasksRepository) Get(id int) (*models.Task, error) {
 	var task models.Task
 	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", tasksTable)
 	if err := ur.db.Get(&task, query, id); err != nil {
-		return task, err
+		return nil, err
 	}
-	return task, nil
+	return &task, nil
 }
 
 func (ur *TasksRepository) GetAll() ([]models.Task, error) {

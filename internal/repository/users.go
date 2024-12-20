@@ -33,13 +33,13 @@ func (ur *UsersRepository) Create(user *models.User) (int, error) {
 	return userId, tx.Commit()
 }
 
-func (ur *UsersRepository) Get(id int) (models.User, error) {
+func (ur *UsersRepository) Get(id int) (*models.User, error) {
 	var user models.User
 	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", usersTable)
 	if err := ur.db.Get(&user, query, id); err != nil {
-		return user, err
+		return nil, err
 	}
-	return user, nil
+	return &user, nil
 }
 
 func (ur *UsersRepository) GetAll() ([]models.User, error) {
