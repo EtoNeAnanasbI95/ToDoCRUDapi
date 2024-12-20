@@ -19,7 +19,7 @@ const query = `
 		is_completed BOOLEAN DEFAULT FALSE
 	);`
 
-func TestTasksRepositoryCreate(t *testing.T) {
+func TestCreate(t *testing.T) {
 	db := tests.Setup(t, query, &tr, repository.NewTasksRepository)
 	defer tests.Teardown(t, db, tableName)
 	task := &models.Task{
@@ -37,7 +37,7 @@ func TestTasksRepositoryCreate(t *testing.T) {
 	assert.Equal(t, task.Description, createdTask.Description)
 }
 
-func TestTasksRepositoryGet(t *testing.T) {
+func TestGet(t *testing.T) {
 	db := tests.Setup(t, query, &tr, repository.NewTasksRepository)
 	defer tests.Teardown(t, db, tableName)
 	setUpModel := &models.Task{
@@ -51,7 +51,7 @@ func TestTasksRepositoryGet(t *testing.T) {
 	assert.Equal(t, setUpModel.Name, get.Name)
 }
 
-func TestTasksRepositoryGetAll(t *testing.T) {
+func TestGetAll(t *testing.T) {
 	db := tests.Setup(t, query, &tr, repository.NewTasksRepository)
 	defer tests.Teardown(t, db, tableName)
 	setUpModels := &[]models.Task{
@@ -81,7 +81,7 @@ func TestTasksRepositoryGetAll(t *testing.T) {
 	}
 }
 
-func TestTasksRepositoryUpdate(t *testing.T) {
+func TestUpdate(t *testing.T) {
 	db := tests.Setup(t, query, &tr, repository.NewTasksRepository)
 	defer tests.Teardown(t, db, tableName)
 	model := &models.Task{
@@ -116,7 +116,7 @@ func TestTasksRepositoryUpdate(t *testing.T) {
 	assert.Equal(t, *modelInput.Name, updatedUser.Name)
 }
 
-func TestTasksRepositoryDelete(t *testing.T) {
+func TestDelete(t *testing.T) {
 	db := tests.Setup(t, query, &tr, repository.NewTasksRepository)
 	defer tests.Teardown(t, db, tableName)
 	model := &models.Task{

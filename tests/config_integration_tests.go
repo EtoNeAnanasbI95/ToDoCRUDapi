@@ -26,13 +26,22 @@ func SetUpTestDD() (*sqlx.DB, error) {
 	return db, nil
 }
 
-func Teardown(t *testing.T, db *sqlx.DB, table string) {
+func Teardown(t *testing.T, db *sqlx.DB, tables ...string) {
 	if db != nil {
-		_, err := db.Exec(fmt.Sprintf("DROP TABLE %s CASCADE", table))
-		if err != nil {
-			t.Errorf("Failed to drop test table: %v", err)
+		if len(tables) > 1 {
+			for table := range tables {
+				_, err := db.Exec(fmt.Sprintf("DROP TABLE %s CASCADE", table))
+				if err != nil {
+					t.Errorf("Failed to drop test table: %v", err)
+				}
+			}
+		} else {
+			_, err := db.Exec(fmt.Sprintf("DROP TABLE %s CASCADE", tables[0]))
+			if err != nil {
+				t.Errorf("Failed to drop test table: %v", err)
+			}
 		}
-		db.Close()
+		_ = db.Close()
 	}
 }
 

@@ -19,7 +19,7 @@ const query = `
 		email TEXT NOT NULL UNIQUE
 	);`
 
-func TestUsersRepositoryCreate(t *testing.T) {
+func TestCreate(t *testing.T) {
 	db := tests.Setup(t, query, &ur, repository.NewUsersRepository)
 	defer tests.Teardown(t, db, tableName)
 	user := &models.User{
@@ -37,7 +37,7 @@ func TestUsersRepositoryCreate(t *testing.T) {
 	assert.Equal(t, user.Name, createdUser.Name)
 }
 
-func TestUsersRepositoryGet(t *testing.T) {
+func TestGet(t *testing.T) {
 	db := tests.Setup(t, query, &ur, repository.NewUsersRepository)
 	defer tests.Teardown(t, db, tableName)
 	setUpUser := &models.User{
@@ -52,7 +52,7 @@ func TestUsersRepositoryGet(t *testing.T) {
 	assert.Equal(t, setUpUser.Email, user.Email)
 }
 
-func TestUsersRepositoryGetAll(t *testing.T) {
+func TestGetAll(t *testing.T) {
 	db := tests.Setup(t, query, &ur, repository.NewUsersRepository)
 	defer tests.Teardown(t, db, tableName)
 	setUpUsers := &[]models.User{
@@ -77,12 +77,12 @@ func TestUsersRepositoryGetAll(t *testing.T) {
 	}
 	users, err := ur.GetAll()
 	assert.NoError(t, err)
-	for index, _ := range users {
+	for index := range users {
 		assert.Equal(t, users[index].Id, ids[index])
 	}
 }
 
-func TestUsersRepositoryUpdate(t *testing.T) {
+func TestUpdate(t *testing.T) {
 	db := tests.Setup(t, query, &ur, repository.NewUsersRepository)
 	defer tests.Teardown(t, db, tableName)
 	user := &models.User{
@@ -103,7 +103,7 @@ func TestUsersRepositoryUpdate(t *testing.T) {
 	assert.Equal(t, userInput.Email, updatedUser.Email)
 }
 
-func TestUsersRepositoryDelete(t *testing.T) {
+func TestDelete(t *testing.T) {
 	db := tests.Setup(t, query, &ur, repository.NewUsersRepository)
 	defer tests.Teardown(t, db, tableName)
 	user := &models.User{
