@@ -6,38 +6,38 @@ import (
 )
 
 type UsersService struct {
-	r *repository.Repository
+	r repository.Users
 }
 
-func NewUsersService(r *repository.Repository) *UsersService {
+func NewUsersService(r repository.Users) *UsersService {
 	return &UsersService{
 		r: r,
 	}
 }
 
 // TODO: завершить имплентацию сервиса
-func (ur *UsersService) Create(user *models.User) (int, error) {
+func (us *UsersService) Create(user *models.User) (int, error) {
 	panic("implement me")
 	return 0, nil
 }
 
 // TODO: завершить имплентацию сервиса
-func (ur *UsersService) Get(id int) (string, error) {
-	panic("implement me")
-	return "", nil
-}
-
-// TODO: завершить имплентацию сервиса
-func (ur *UsersService) GetAll() ([]string, error) {
+func (us *UsersService) Get(id int) (*models.User, error) {
 	panic("implement me")
 	return nil, nil
 }
 
-func (ur *UsersService) Update(id int, user *models.UserInput) error {
-	if err := user.Validate(); err != nil {
-		return err
-	}
-	return ur.r.Users.Update(id, user)
+// TODO: завершить имплентацию сервиса
+func (us *UsersService) GetAll() ([]models.User, error) {
+	panic("implement me")
+	return nil, nil
+}
+
+func (us *UsersService) Update(id int, user *models.User) error {
+	//if err := user.Validate(); err != nil {
+	//	return err
+	//}
+	return us.r.Update(id, user)
 }
 
 // TODO: завершить имплентацию сервиса
