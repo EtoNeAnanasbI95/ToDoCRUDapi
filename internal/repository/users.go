@@ -51,16 +51,16 @@ func (ur *UsersRepository) GetAll() ([]models.User, error) {
 	return users, nil
 }
 
-func (ur *UsersRepository) Update(id int, user *models.User) error {
+func (ur *UsersRepository) Update(id int, user *models.UserInput) error {
 	setValues := make([]string, 0, 2)
 	args := make([]interface{}, 0, 2)
 	argsId := 1
-	if user.Name != "" {
+	if user.Name != nil {
 		setValues = append(setValues, fmt.Sprintf("name = $%d", argsId))
 		argsId++
 		args = append(args, user.Name)
 	}
-	if user.Email != "" {
+	if user.Email != nil {
 		setValues = append(setValues, fmt.Sprintf("email = $%d", argsId))
 		argsId++
 		args = append(args, user.Email)

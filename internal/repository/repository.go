@@ -15,7 +15,7 @@ type Users interface {
 	Create(user *models.User) (int, error)
 	Get(id int) (*models.User, error)
 	GetAll() ([]models.User, error)
-	Update(id int, user *models.User) error
+	Update(id int, user *models.UserInput) error
 	Delete(id int) error
 }
 
