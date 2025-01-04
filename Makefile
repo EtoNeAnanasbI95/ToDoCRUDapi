@@ -1,5 +1,6 @@
 CONNECTION_STRING ?= $(PGCONNECT)
-dirs = tasks_repository_test users_repository_test
+repo_dirs = tasks_repository_test users_repository_test
+service_dirs = users_service_test
 
 all: migrate run
 
@@ -17,12 +18,10 @@ rollback: check-consts
 
 run:
 	# TODO: написать запуск докера
-	echo "приложение запускается"
+	@echo "Starting api"
+	@go run ./cmd/ToDoCRUD/main.go --config="./config/local.yaml"
 
 run-tests:
 	@echo "Running tests..."
-	$(foreach dir, $(dirs), @TEST_DB_DSN=$(TEST_DB_DSN) go test "./tests/$(dir)" -v)
-
-clean:
-	@unset PG_USER PG_PASSWORD
-	@echo "Переменные подключения очищены."
+	$(foreach dir, $(repo_dirs), @TEST_DB_DSN=$(TEST_DB_DSN) go test "./tests/repositories_test/$(dir)" -v)
+	$(foreach dir, $(service_dirs), @TEST_DB_DSN=$(TEST_DB_DSN) go test "./tests/services_test/$(dir)" -v)
