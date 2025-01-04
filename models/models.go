@@ -1,5 +1,7 @@
 package models
 
+import "fmt"
+
 type User struct {
 	Id    int    `db:"id" json:"id"`
 	Name  string `db:"name" json:"name" binding:"required"`
@@ -23,4 +25,24 @@ type TaskInput struct {
 	Name        *string `json:"name"`
 	Description *string `json:"description"`
 	IsCompleted *bool   `json:"is_completed"`
+}
+
+func (u *TaskInput) Validate() error {
+	if u.Name == nil && u.Description == nil && u.IsCompleted == nil {
+		return fmt.Errorf("task lables is empty")
+	}
+	return nil
+}
+
+type UserInput struct {
+	Id    *int    `json:"id"`
+	Name  *string `json:"name"`
+	Email *string `json:"email"`
+}
+
+func (u *UserInput) Validate() error {
+	if u.Name == nil && u.Email == nil {
+		return fmt.Errorf("user lables is empty")
+	}
+	return nil
 }
