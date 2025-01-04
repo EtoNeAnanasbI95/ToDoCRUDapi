@@ -3,7 +3,7 @@ package users_repository_test
 import (
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/repository"
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/models"
-	"github.com/EtoNeAnanasbI95/ToDoCRUD/tests"
+	"github.com/EtoNeAnanasbI95/ToDoCRUD/tests/repositories_test"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -20,8 +20,10 @@ const query = `
 	);`
 
 func TestCreate(t *testing.T) {
-	db := tests.Setup(t, query, &ur, repository.NewUsersRepository)
-	defer tests.Teardown(t, db, tableName)
+	db := repositories_test.Setup(t, query, &ur, repository.NewUsersRepository)
+	defer func() {
+		assert.Nil(t, repositories_test.Teardown(db, tableName))
+	}()
 	user := &models.User{
 		Name:  "testCreate",
 		Email: "testCreate",
@@ -38,8 +40,10 @@ func TestCreate(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	db := tests.Setup(t, query, &ur, repository.NewUsersRepository)
-	defer tests.Teardown(t, db, tableName)
+	db := repositories_test.Setup(t, query, &ur, repository.NewUsersRepository)
+	defer func() {
+		assert.Nil(t, repositories_test.Teardown(db, tableName))
+	}()
 	setUpUser := &models.User{
 		Name:  "testGet",
 		Email: "testGet",
@@ -53,8 +57,10 @@ func TestGet(t *testing.T) {
 }
 
 func TestGetAll(t *testing.T) {
-	db := tests.Setup(t, query, &ur, repository.NewUsersRepository)
-	defer tests.Teardown(t, db, tableName)
+	db := repositories_test.Setup(t, query, &ur, repository.NewUsersRepository)
+	defer func() {
+		assert.Nil(t, repositories_test.Teardown(db, tableName))
+	}()
 	setUpUsers := &[]models.User{
 		{
 			Name:  "testGetAll",
@@ -83,8 +89,10 @@ func TestGetAll(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	db := tests.Setup(t, query, &ur, repository.NewUsersRepository)
-	defer tests.Teardown(t, db, tableName)
+	db := repositories_test.Setup(t, query, &ur, repository.NewUsersRepository)
+	defer func() {
+		assert.Nil(t, repositories_test.Teardown(db, tableName))
+	}()
 	user := &models.User{
 		Name:  "testUpdate",
 		Email: "testUpdate",
@@ -104,8 +112,10 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	db := tests.Setup(t, query, &ur, repository.NewUsersRepository)
-	defer tests.Teardown(t, db, tableName)
+	db := repositories_test.Setup(t, query, &ur, repository.NewUsersRepository)
+	defer func() {
+		assert.Nil(t, repositories_test.Teardown(db, tableName))
+	}()
 	user := &models.User{
 		Name:  "test",
 		Email: "test",
