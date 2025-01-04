@@ -1,5 +1,5 @@
 env: "local" # dev, prod
 connection_string: "postgres://postgres:6699@localhost:5432/ToDoCRUDdb?sslmode=disable"
 api:
-  port: 8000
+  port: 8001
   timeout: 1h
