@@ -15,33 +15,38 @@ func NewUsersService(r repository.Users) *UsersService {
 	}
 }
 
-// TODO: завершить имплентацию сервиса
 func (us *UsersService) Create(user *models.User) (int, error) {
-	panic("implement me")
-	return 0, nil
+	id, err := us.r.Create(user)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }
 
-// TODO: завершить имплентацию сервиса
 func (us *UsersService) Get(id int) (*models.User, error) {
-	panic("implement me")
-	return nil, nil
+	user, err := us.r.Get(id)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
-// TODO: завершить имплентацию сервиса
 func (us *UsersService) GetAll() ([]models.User, error) {
-	panic("implement me")
-	return nil, nil
+	users, err := us.r.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }
 
-func (us *UsersService) Update(id int, user *models.User) error {
-	//if err := user.Validate(); err != nil {
-	//	return err
-	//}
+// TODO: допсаить чёто с обновлением юзера
+func (us *UsersService) Update(id int, user *models.UserInput) error {
+	if err := user.Validate(); err != nil {
+		return err
+	}
 	return us.r.Update(id, user)
 }
 
-// TODO: завершить имплентацию сервиса
 func (ur *UsersService) Delete(id int) error {
-	panic("implement me")
-	return nil
+	return ur.r.Delete(id)
 }
