@@ -43,18 +43,10 @@ func (h *Handler) InitRouts() *gin.Engine {
 			tasks := api.Group("/tasks")
 			{
 				tasks.POST("/", h.tasks.Create)
-				tasks.GET("/", h.tasks.GetAll)
-				tasks.GET("/:id", h.tasks.Get)
-				users.PUT("/:id", h.tasks.Update)
-				tasks.DELETE("/:id", h.tasks.Delete)
-			}
-			usersTasks := api.Group("/users-tasks")
-			{
-				usersTasks.POST("/", h.usersTasks.Create)
-				usersTasks.GET("/", h.usersTasks.GetAll)
-				usersTasks.GET("/:id", h.usersTasks.Get)
-				users.PUT("/:id", h.usersTasks.Update)
-				usersTasks.DELETE("/:id", h.usersTasks.Delete)
+				tasks.GET("/:uid", h.tasks.GetAll)
+				tasks.GET("/:uid/:id", h.tasks.Get)
+				users.PUT("/:uid/:id", h.tasks.Update)
+				tasks.DELETE("/:uid/:id", h.tasks.Delete)
 			}
 		*/
 	}
