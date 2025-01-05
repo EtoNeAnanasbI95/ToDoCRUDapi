@@ -15,14 +15,14 @@ type CRUD interface {
 }
 
 type Handler struct {
-	users      CRUD
-	tasks      CRUD
-	usersTasks CRUD
+	log      *slog.Logger
+	services *service.Service
 }
 
 func NewHandler(log *slog.Logger, s *service.Service) *Handler {
 	return &Handler{
-		users: NewUsersHandler(log, s),
+		log:      log,
+		services: s,
 	}
 }
 
@@ -32,23 +32,20 @@ func (h *Handler) InitRouts() *gin.Engine {
 	{
 		users := api.Group("/users")
 		{
-			users.POST("/", h.users.Create)
-			users.GET("/", h.users.GetAll)
-			users.GET("/:id", h.users.Get)
-			users.PUT("/:id", h.users.Update)
-			users.DELETE("/:id", h.users.Delete)
+			users.POST("/", h.CreateUser)
+			users.GET("/", h.GetAllUsers)
+			users.GET("/:id", h.GetUser)
+			users.PUT("/:id", h.UpdateUser)
+			users.DELETE("/:id", h.DeleteUser)
 		}
-		// TODO: дописать роутинг для остальных ендпоинтов
-		/*
-			tasks := api.Group("/tasks")
-			{
-				tasks.POST("/", h.tasks.Create)
-				tasks.GET("/:uid", h.tasks.GetAll)
-				tasks.GET("/:uid/:id", h.tasks.Get)
-				users.PUT("/:uid/:id", h.tasks.Update)
-				tasks.DELETE("/:uid/:id", h.tasks.Delete)
-			}
-		*/
+		tasks := api.Group("/tasks", h.CheckUserId)
+		{
+			tasks.POST("/", h.CreateTask)
+			tasks.GET("/", h.GetAllTasks)
+			tasks.GET("/:id", h.GetTask)
+			users.PUT("/:id", h.UpdateTask)
+			tasks.DELETE(":id", h.DeleteTask)
+		}
 	}
 	return router
 }
