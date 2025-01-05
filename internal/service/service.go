@@ -14,7 +14,7 @@ type Users interface {
 }
 
 type Tasks interface {
-	Create(user *models.Task) (int, error)
+	Create(userId int, user *models.Task) (int, error)
 	Get(userId int, id int) (*models.Task, error)
 	GetAll(userId int) ([]models.Task, error)
 	Update(userId int, id int, task *models.TaskInput) error
@@ -29,6 +29,6 @@ type Service struct {
 func NewService(r *repository.Repository) *Service {
 	return &Service{
 		Users: NewUsersService(r.Users),
-		Tasks: nil,
+		Tasks: NewTasksService(r.Tasks),
 	}
 }
