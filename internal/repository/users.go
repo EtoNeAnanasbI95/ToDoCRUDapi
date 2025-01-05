@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+const usersErrorPrefix = "[users_repository]"
+
 type UsersRepository struct {
 	db *sqlx.DB
 }
@@ -20,7 +22,7 @@ func NewUsersRepository(db *sqlx.DB) *UsersRepository {
 func (ur *UsersRepository) Create(user *models.User) (int, error) {
 	tx, err := ur.db.Begin()
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("%s: %w", usersErrorPrefix, err)
 	}
 	var userId int
 	createUserQuery := fmt.Sprintf("INSERT INTO %s (name, email) VALUES ($1, $2) RETURNING id", usersTable)
@@ -28,7 +30,7 @@ func (ur *UsersRepository) Create(user *models.User) (int, error) {
 	err = row.Scan(&userId)
 	if err != nil {
 		_ = tx.Rollback()
-		return 0, err
+		return 0, fmt.Errorf("%s: %w", usersErrorPrefix, err)
 	}
 	return userId, tx.Commit()
 }
@@ -37,7 +39,7 @@ func (ur *UsersRepository) Get(id int) (*models.User, error) {
 	var user models.User
 	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", usersTable)
 	if err := ur.db.Get(&user, query, id); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", usersErrorPrefix, err)
 	}
 	return &user, nil
 }
@@ -46,7 +48,7 @@ func (ur *UsersRepository) GetAll() ([]models.User, error) {
 	var users []models.User
 	query := fmt.Sprintf("SELECT * FROM %s", usersTable)
 	if err := ur.db.Select(&users, query); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", usersErrorPrefix, err)
 	}
 	return users, nil
 }
@@ -70,12 +72,12 @@ func (ur *UsersRepository) Update(id int, user *models.UserInput) error {
 
 	tx, err := ur.db.Begin()
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %w", usersErrorPrefix, err)
 	}
 	_, err = tx.Exec(setQuery, args...)
 	if err != nil {
 		_ = tx.Rollback()
-		return err
+		return fmt.Errorf("%s: %w", usersErrorPrefix, err)
 	}
 	return tx.Commit()
 }
@@ -83,5 +85,8 @@ func (ur *UsersRepository) Update(id int, user *models.UserInput) error {
 func (ur *UsersRepository) Delete(id int) error {
 	query := fmt.Sprintf("DELETE FROM %s WHERE id = $1", usersTable)
 	_, err := ur.db.Exec(query, id)
-	return err
+	if err != nil {
+		return fmt.Errorf("%s: %w", usersErrorPrefix, err)
+	}
+	return nil
 }

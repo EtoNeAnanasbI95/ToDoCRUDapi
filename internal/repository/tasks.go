@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+const tasksErrorPrefix = "[tasks_repository]"
+
 type TasksRepository struct {
 	db *sqlx.DB
 }
@@ -20,7 +22,7 @@ func NewTasksRepository(db *sqlx.DB) *TasksRepository {
 func (ur *TasksRepository) Create(task *models.Task) (int, error) {
 	tx, err := ur.db.Begin()
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("%s: %w", tasksErrorPrefix, err)
 	}
 	var taskId int
 	createTaskQuery := fmt.Sprintf("INSERT INTO %s (name, description, is_completed) VALUES ($1, $2, $3) RETURNING id", tasksTable)
@@ -28,7 +30,7 @@ func (ur *TasksRepository) Create(task *models.Task) (int, error) {
 	err = row.Scan(&taskId)
 	if err != nil {
 		_ = tx.Rollback()
-		return 0, err
+		return 0, fmt.Errorf("%s: %w", tasksErrorPrefix, err)
 	}
 	return taskId, tx.Commit()
 }
@@ -37,7 +39,7 @@ func (ur *TasksRepository) Get(id int) (*models.Task, error) {
 	var task models.Task
 	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", tasksTable)
 	if err := ur.db.Get(&task, query, id); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", tasksErrorPrefix, err)
 	}
 	return &task, nil
 }
@@ -46,7 +48,7 @@ func (ur *TasksRepository) GetAll() ([]models.Task, error) {
 	var tasks []models.Task
 	query := fmt.Sprintf("SELECT * FROM %s", tasksTable)
 	if err := ur.db.Select(&tasks, query); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", tasksErrorPrefix, err)
 	}
 	return tasks, nil
 }
@@ -81,7 +83,7 @@ func (ur *TasksRepository) Update(id int, task *models.TaskInput) error {
 	_, err = tx.Exec(setQuery, args...)
 	if err != nil {
 		_ = tx.Rollback()
-		return err
+		return fmt.Errorf("%s: %w", tasksErrorPrefix, err)
 	}
 	return tx.Commit()
 }
@@ -89,5 +91,8 @@ func (ur *TasksRepository) Update(id int, task *models.TaskInput) error {
 func (ur *TasksRepository) Delete(id int) error {
 	query := fmt.Sprintf("DELETE FROM %s WHERE id = $1", tasksTable)
 	_, err := ur.db.Exec(query, id)
-	return err
+	if err != nil {
+		return fmt.Errorf("%s: %w", tasksErrorPrefix, err)
+	}
+	return nil
 }
