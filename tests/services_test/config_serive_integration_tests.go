@@ -9,12 +9,9 @@ import (
 type initRepoFn[Repo any] func(db *sqlx.DB) Repo
 
 func Setup[Repository any](t *testing.T, query string, repo **Repository, init initRepoFn[*Repository]) *sqlx.DB {
-	db, err := repositories_test.SetUpTestDB()
-	if err != nil {
-		t.Fatalf("Failed to create test table: %v", err)
-	}
+	db := repositories_test.SetUpTestDB()
 	*repo = init(db)
-	_, err = db.Exec(query)
+	_, err := db.Exec(query)
 	if err != nil {
 		t.Fatalf("Failed to create test table: %v", err)
 	}
