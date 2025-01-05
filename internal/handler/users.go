@@ -53,7 +53,7 @@ func (h *UsersHandler) Get(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"user": user})
+	c.JSON(http.StatusOK, user)
 }
 
 func (h *UsersHandler) GetAll(c *gin.Context) {
@@ -63,7 +63,7 @@ func (h *UsersHandler) GetAll(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"users": users})
+	c.JSON(http.StatusOK, users)
 }
 
 func (h *UsersHandler) Update(c *gin.Context) {
@@ -103,5 +103,5 @@ func (h *UsersHandler) Delete(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"msg": "successfully delete user"})
+	c.JSON(http.StatusOK, gin.H{"message": "successfully delete user"})
 }
