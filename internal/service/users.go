@@ -1,9 +1,12 @@
 package service
 
 import (
+	"fmt"
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/repository"
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/models"
 )
+
+const usersErrorPrefix = "[users_repository]"
 
 type UsersService struct {
 	r repository.Users
@@ -39,14 +42,13 @@ func (us *UsersService) GetAll() ([]models.User, error) {
 	return users, nil
 }
 
-// TODO: допсаить чёто с обновлением юзера
 func (us *UsersService) Update(id int, user *models.UserInput) error {
 	if err := user.Validate(); err != nil {
-		return err
+		return fmt.Errorf("%s: %w", usersErrorPrefix, err)
 	}
 	return us.r.Update(id, user)
 }
 
-func (ur *UsersService) Delete(id int) error {
-	return ur.r.Delete(id)
+func (us *UsersService) Delete(id int) error {
+	return us.r.Delete(id)
 }
