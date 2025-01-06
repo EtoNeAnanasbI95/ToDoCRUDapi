@@ -43,7 +43,7 @@ func (h *Handler) InitRouts() *gin.Engine {
 			tasks.POST("/", h.CreateTask)
 			tasks.GET("/", h.GetAllTasks)
 			tasks.GET("/:id", h.GetTask)
-			users.PUT("/:id", h.UpdateTask)
+			tasks.PUT("/:id", h.UpdateTask)
 			tasks.DELETE(":id", h.DeleteTask)
 		}
 	}
