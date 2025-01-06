@@ -24,7 +24,6 @@ swag:
 	@echo "Done"
 
 run:
-	# TODO: написать запуск докера
 	@echo "Starting api"
 	@go run ./cmd/ToDoCRUD/main.go --config="./config/local.yaml"
 
