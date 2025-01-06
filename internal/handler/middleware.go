@@ -19,11 +19,11 @@ func (h *Handler) CheckUserId(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"msg": err.Error()})
 		return
 	}
-	userId, err := h.services.Users.Get(id)
+	_, err = h.services.Users.Get(id)
 	if err != nil {
 		h.log.Error(err.Error())
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"msg": err.Error()})
 		return
 	}
-	c.Set("uid", userId)
+	c.Set("uid", id)
 }
