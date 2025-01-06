@@ -25,7 +25,7 @@ func (ur *UsersTasksRepository) Create(user *models.UsersTasks) (int, error) {
 		return 0, fmt.Errorf("%s: %w", usersTasksErrorPrefix, err)
 	}
 	var usersTasksId int
-	createUserQuery := fmt.Sprintf("INSERT INTO %s (user_id, task_id) VALUES ($1, $2) RETURNING id)", usersTasksTable)
+	createUserQuery := fmt.Sprintf("INSERT INTO %s (user_id, task_id) VALUES ($1, $2) RETURNING id", usersTasksTable)
 	row := tx.QueryRow(createUserQuery, user.UserId, user.TaskId)
 	err = row.Scan(&usersTasksId)
 	if err != nil {
@@ -37,7 +37,7 @@ func (ur *UsersTasksRepository) Create(user *models.UsersTasks) (int, error) {
 
 func (ur *UsersTasksRepository) Get(id int) (*models.UsersTasks, error) {
 	var usersTask models.UsersTasks
-	query := fmt.Sprintf("SELECT * FROM %s WHERE id == $1", usersTasksTable)
+	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", usersTasksTable)
 	if err := ur.db.Select(&usersTask, query, id); err != nil {
 		return nil, fmt.Errorf("%s: %w", usersTasksErrorPrefix, err)
 	}
