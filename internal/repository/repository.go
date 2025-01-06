@@ -31,6 +31,7 @@ type UsersTasks interface {
 	Create(user *models.UsersTasks) (int, error)
 	Get(id int) (*models.UsersTasks, error)
 	GetAll() ([]models.UsersTasks, error)
+	GetWhereUid(userId int) ([]models.UsersTasks, error)
 	Update(id int, usersTasks *models.UsersTasks) error
 	Delete(id int) error
 }
