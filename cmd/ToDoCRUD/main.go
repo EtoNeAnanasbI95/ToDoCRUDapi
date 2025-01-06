@@ -6,6 +6,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/EtoNeAnanasbI95/ToDoCRUD"
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/config"
@@ -15,7 +16,8 @@ import (
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/storage"
 	"log/slog"
 	"os"
-	"sync"
+	"os/signal"
+	"syscall"
 )
 
 const (
@@ -36,29 +38,27 @@ func main() {
 	db := storage.MustInitDB(cfg.ConnectionString)
 	defer db.Close()
 	r := repository.NewRepository(db)
-	//TODO: инициализировать сервисы
 	s := service.NewService(r)
-	// TODO: инициализировать хендлеры
 	handler := handler.NewHandler(log, s)
 	api := handler.InitRouts()
-	// TODO: запустить апи
 	srv := new(ToDoCRUD.Server)
-	wg := sync.WaitGroup{}
-	wg.Add(1)
-	//TODO: поправить выдачу статус кодов
 	go func() {
 		if err := srv.Run(api, cfg); err != nil {
 			log.Error(err.Error())
 		}
-		wg.Done()
 	}()
 	log.Info("Api is running")
 	if cfg.Env == envLocal {
 		log.Info("Running in local mode",
 			slog.String("URL", fmt.Sprintf("http://localhost:%d/swagger/index.html", cfg.Api.Port)))
 	}
-	// TODO: сделать gracefull shutdown
-	wg.Wait()
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+	log.Info("Shutting down server...")
+	if err := srv.Stop(context.Background()); err != nil {
+		log.Error(err.Error())
+	}
 	// TODO: написать докер
 }
 
