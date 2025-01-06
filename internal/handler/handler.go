@@ -1,13 +1,14 @@
 package handler
 
 import (
+	_ "github.com/EtoNeAnanasbI95/ToDoCRUD/docs"
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/service"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"log/slog"
-
-	_ "github.com/EtoNeAnanasbI95/ToDoCRUD/docs"
+	"net/http"
 )
 
 type CRUD interface {
@@ -32,24 +33,32 @@ func NewHandler(log *slog.Logger, s *service.Service) *Handler {
 
 func (h *Handler) InitRouts() *gin.Engine {
 	router := gin.New()
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowAllOrigins = true
+	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Authorization")
+	router.Use(cors.New(corsConfig))
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	api := router.Group("/api")
 	{
 		users := api.Group("/users")
 		{
-			users.POST("/", h.CreateUser)
-			users.GET("/", h.GetAllUsers)
-			users.GET("/:id", h.GetUser)
-			users.PUT("/:id", h.UpdateUser)
-			users.DELETE("/:id", h.DeleteUser)
+			users.POST("", h.CreateUser)
+			users.GET("", h.GetAllUsers)
+			users.GET(":id", h.GetUser)
+			users.PUT(":id", h.UpdateUser)
+			users.DELETE(":id", h.DeleteUser)
 		}
+		// TODO: там косяк в свагере с защищённым ендпоинтом, надо сделать так, чтоб просил заголовок
 		tasks := api.Group("/tasks", h.CheckUserId)
 		{
-			tasks.POST("/", h.CreateTask)
-			tasks.GET("/", h.GetAllTasks)
-			tasks.GET("/:id", h.GetTask)
-			tasks.PUT("/:id", h.UpdateTask)
+			tasks.POST("", h.CreateTask)
+			tasks.GET("", h.GetAllTasks)
+			tasks.GET(":id", h.GetTask)
+			tasks.PUT(":id", h.UpdateTask)
 			tasks.DELETE(":id", h.DeleteTask)
+			tasks.OPTIONS("", func(c *gin.Context) {
+				c.Status(http.StatusOK)
+			})
 		}
 	}
 	return router
