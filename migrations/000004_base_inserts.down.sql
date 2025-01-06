@@ -1,3 +1,5 @@
-DELETE
-FROM users
-WHERE email IN ('hihihaha@golang.com', 'spletni@csharp.com', 'jwt_auth@za-pol-minuti.com');
+DELETE FROM "users";
+
+DELETE FROM "tasks";
+
+DELETE FROM "users_tasks";
