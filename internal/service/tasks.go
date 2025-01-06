@@ -87,6 +87,10 @@ func (us *TasksService) Delete(userId int, id int) error {
 	}
 	for _, userTask := range userTasks {
 		if userTask.TaskId == id {
+			err := us.rut.Delete(userTask.Id)
+			if err != nil {
+				return fmt.Errorf("%s: sometimes went wrong, %w", tasksErrorPrefix, err)
+			}
 			return us.rt.Delete(id)
 		}
 	}

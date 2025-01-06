@@ -89,5 +89,5 @@ func (h *Handler) DeleteUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "successfully delete user"})
+	c.JSON(http.StatusOK, gin.H{"msg": "successfully delete user"})
 }
