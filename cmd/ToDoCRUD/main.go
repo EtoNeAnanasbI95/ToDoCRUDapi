@@ -1,8 +1,8 @@
 // @title ToDo CRUD API
 // @version 1.0
 // @description API для управления задачами и пользователями
-// @host localhost:8080
-// @BasePath /api
+// @host localhost:8001
+// @BasePath /
 package main
 
 import (
