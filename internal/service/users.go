@@ -6,7 +6,7 @@ import (
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/models"
 )
 
-const usersErrorPrefix = "[users_repository]"
+const usersErrorPrefix = "[users_service]"
 
 type UsersService struct {
 	r repository.Users
