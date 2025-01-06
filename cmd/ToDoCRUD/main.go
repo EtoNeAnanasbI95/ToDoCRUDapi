@@ -1,3 +1,8 @@
+// @title ToDo CRUD API
+// @version 1.0
+// @description API для управления задачами и пользователями
+// @host localhost:8080
+// @BasePath /api
 package main
 
 import (
@@ -50,7 +55,7 @@ func main() {
 	log.Info("Api is running")
 	if cfg.Env == envLocal {
 		log.Info("Running in local mode",
-			slog.String("URL", fmt.Sprintf("http://localhost:%d", cfg.Api.Port)))
+			slog.String("URL", fmt.Sprintf("http://localhost:%d/swagger/index.html", cfg.Api.Port)))
 	}
 	// TODO: сделать gracefull shutdown
 	wg.Wait()

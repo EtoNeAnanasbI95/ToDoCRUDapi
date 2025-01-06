@@ -1,0 +1,357 @@
+basePath: /api
+definitions:
+  models.Task:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      is_completed:
+        type: boolean
+      name:
+        type: string
+    required:
+    - description
+    - name
+    type: object
+  models.TaskInput:
+    properties:
+      description:
+        type: string
+      is_completed:
+        type: boolean
+      name:
+        type: string
+    type: object
+  models.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    required:
+    - email
+    - name
+    type: object
+  models.UserInput:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API для управления задачами и пользователями
+  title: ToDo CRUD API
+  version: "1.0"
+paths:
+  /api/tasks/:
+    get:
+      description: Этот эндпоинт возвращает список всех задач, связанных с текущим
+        пользователем
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Task'
+            type: array
+        "400":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получить задачи
+      tags:
+      - Tasks
+    post:
+      consumes:
+      - application/json
+      description: Этот эндпоинт создает задачу пользователя по данным, отправленным
+        в теле запроса
+      parameters:
+      - description: Данные задачи пользователя
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/models.Task'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Создать новую задачу пользователя
+      tags:
+      - Tasks
+  /api/tasks/{id}:
+    delete:
+      description: Этот эндпоинт удаляет задачу пользователя из системы по его ID
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: Задача удалена
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Удалить задачу пользователя
+      tags:
+      - Tasks
+    get:
+      description: Этот эндпоинт возвращает информацию о задаче пользователя по его
+        ID
+      parameters:
+      - description: ID задачи пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Task'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получить задаче пользователя
+      tags:
+      - Tasks
+    put:
+      consumes:
+      - application/json
+      description: Этот эндпоинт обновляет информацию о задаче пользователя по её
+        ID
+      parameters:
+      - description: ID задачи пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Обновленные данные задачи пользователя
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/models.TaskInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Обновить задачу пользователя
+      tags:
+      - Tasks
+  /api/users/:
+    get:
+      description: Этот эндпоинт возвращает список всех пользователей
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить всех пользователей
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Этот эндпоинт создает пользователя по данным, отправленным в теле
+        запроса
+      parameters:
+      - description: Данные пользователя
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать нового пользователя
+      tags:
+      - Users
+  /api/users/{id}:
+    delete:
+      description: Этот эндпоинт удаляет пользователя из системы по его ID
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: Пользователь удален
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удалить пользователя
+      tags:
+      - Users
+    get:
+      description: Этот эндпоинт возвращает информацию о пользователе по его ID
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить пользователя
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Этот эндпоинт обновляет информацию о пользователе по его ID
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Обновленные данные пользователя
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить пользователя
+      tags:
+      - Users
+swagger: "2.0"

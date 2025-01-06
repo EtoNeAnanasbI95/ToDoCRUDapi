@@ -6,6 +6,11 @@ import (
 	"strconv"
 )
 
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+
+// CheckUserId проверяет айди авторизации
 func (h *Handler) CheckUserId(c *gin.Context) {
 	header := c.GetHeader("Authorization")
 	if header == "" {

@@ -2,12 +2,14 @@ package models
 
 import "fmt"
 
+// User представляет модель пользователя
 type User struct {
 	Id    int    `db:"id" json:"id"`
 	Name  string `db:"name" json:"name" binding:"required"`
 	Email string `db:"email" json:"email" binding:"required"`
 }
 
+// Task представляет модель задачи
 type Task struct {
 	Id          int    `db:"id" json:"id"`
 	Name        string `db:"name" json:"name" binding:"required"`
@@ -15,12 +17,14 @@ type Task struct {
 	IsCompleted bool   `db:"is_completed" json:"is_completed"`
 }
 
+// UsersTasks представляет модель задачи пользователя, как обращение к таблице MtM
 type UsersTasks struct {
 	Id     int `db:"id" json:"id"`
 	UserId int `db:"user_id" json:"user_id"`
 	TaskId int `db:"task_id" json:"task_id"`
 }
 
+// TaskInput представляет модель обновления задачи
 type TaskInput struct {
 	Name        *string `json:"name"`
 	Description *string `json:"description"`
@@ -34,6 +38,7 @@ func (u *TaskInput) Validate() error {
 	return nil
 }
 
+// UserInput представляет модель обновления пользователя
 type UserInput struct {
 	Id    *int    `json:"id"`
 	Name  *string `json:"name"`

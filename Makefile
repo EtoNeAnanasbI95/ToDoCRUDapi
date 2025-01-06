@@ -16,6 +16,13 @@ migrate: check-consts
 rollback: check-consts
 	migrate -database "$(CONNECTION_STRING)" -path migrations down
 
+build:
+
+swag:
+	@echo "Generate swagger docs"
+	@swag i -d ./cmd/ToDoCRUD/,./internal,./models
+	@echo "Done"
+
 run:
 	# TODO: написать запуск докера
 	@echo "Starting api"

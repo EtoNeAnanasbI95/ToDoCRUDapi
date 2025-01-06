@@ -3,7 +3,11 @@ package handler
 import (
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/service"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"log/slog"
+
+	_ "github.com/EtoNeAnanasbI95/ToDoCRUD/docs"
 )
 
 type CRUD interface {
@@ -28,6 +32,7 @@ func NewHandler(log *slog.Logger, s *service.Service) *Handler {
 
 func (h *Handler) InitRouts() *gin.Engine {
 	router := gin.New()
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	api := router.Group("/api")
 	{
 		users := api.Group("/users")
