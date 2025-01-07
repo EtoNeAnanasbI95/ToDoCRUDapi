@@ -3,12 +3,11 @@ package handler
 import (
 	_ "github.com/EtoNeAnanasbI95/ToDoCRUD/docs"
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/service"
-	"github.com/gin-contrib/cors"
+	// "github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"log/slog"
-	"net/http"
 )
 
 type CRUD interface {
@@ -33,10 +32,12 @@ func NewHandler(log *slog.Logger, s *service.Service) *Handler {
 
 func (h *Handler) InitRouts() *gin.Engine {
 	router := gin.New()
-	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowAllOrigins = true
-	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Authorization")
-	router.Use(cors.New(corsConfig))
+	//corsConfig := cors.DefaultConfig()
+	//corsConfig.AllowAllOrigins = true
+	//corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Authorization")
+	//h.log.Info("Allow headers", corsConfig.AllowHeaders)
+	//router.Use(cors.New(corsConfig))
+	router.Use(h.CORSMiddleware)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	api := router.Group("/api")
 	{
@@ -56,9 +57,6 @@ func (h *Handler) InitRouts() *gin.Engine {
 			tasks.GET(":id", h.GetTask)
 			tasks.PUT(":id", h.UpdateTask)
 			tasks.DELETE(":id", h.DeleteTask)
-			tasks.OPTIONS("", func(c *gin.Context) {
-				c.Status(http.StatusOK)
-			})
 		}
 	}
 	return router
