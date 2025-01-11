@@ -4,21 +4,14 @@ service_dirs = users_service_test
 
 all: migrate run
 
-check-consts:
-	ifeq ($(CONNECTION_STRING),)
-	  $(error PGCONNECT не задан. Установите переменную окружения PGUSER или передайте её через make.)
-	endif
-
-migrate: check-consts
+migrate:
 	# postgres://$(CRUD_USER):$(CRUD_PASSWORD)@localhost:5432/$(DBNAME)?sslmode=disable
 	migrate -database "$(CONNECTION_STRING)" -path migrations up
 
-rollback: check-consts
+rollback:
 	migrate -database "$(CONNECTION_STRING)" -path migrations down
 
-build:
-
-swag:
+gen-swag:
 	@echo "Generate swagger docs"
 	@swag i -d ./cmd/ToDoCRUD/,./internal,./models
 	@echo "Done"
