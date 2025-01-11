@@ -2,6 +2,7 @@ package handler
 
 import (
 	_ "github.com/EtoNeAnanasbI95/ToDoCRUD/docs"
+	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/clients/sso/grpc"
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/service"
 	// "github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -21,12 +22,14 @@ type CRUD interface {
 type Handler struct {
 	log      *slog.Logger
 	services *service.Service
+	Sso      *grpc.Client
 }
 
-func NewHandler(log *slog.Logger, s *service.Service) *Handler {
+func NewHandler(log *slog.Logger, s *service.Service, sso *grpc.Client) *Handler {
 	return &Handler{
 		log:      log,
 		services: s,
+		Sso:      sso,
 	}
 }
 
@@ -50,7 +53,7 @@ func (h *Handler) InitRouts() *gin.Engine {
 			users.DELETE(":id", h.DeleteUser)
 		}
 		// TODO: там косяк в свагере с защищённым ендпоинтом, надо сделать так, чтоб просил заголовок
-		tasks := api.Group("/tasks", h.CheckUserId)
+		tasks := api.Group("/tasks", h.CheckAuth)
 		{
 			tasks.POST("", h.CreateTask)
 			tasks.GET("", h.GetAllTasks)

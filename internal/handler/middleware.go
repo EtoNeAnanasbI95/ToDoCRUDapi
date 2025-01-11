@@ -1,36 +1,39 @@
 package handler
 
 import (
+	"context"
+	authv1 "github.com/EtoNeAnanasbI95/protos_auth/gen/go"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
+	"strings"
 )
 
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
 
-// CheckUserId проверяет айди авторизации
-func (h *Handler) CheckUserId(c *gin.Context) {
+// CheckAuth занимается проверкой авторизации пользователя
+func (h *Handler) CheckAuth(c *gin.Context) {
 	header := c.GetHeader("Authorization")
 	if header == "" {
 		h.log.Error("Authorization header is empty")
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"msg": "Authorization header is empty"})
 		return
 	}
-	id, err := strconv.Atoi(header)
-	if err != nil {
-		h.log.Error("Authorization header is invalid")
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"msg": err.Error()})
+	headerParts := strings.Split(header, " ")
+	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
+		h.log.Error("invalid Authorization filed format")
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"msg": "invalid Authorization filed format"})
 		return
 	}
-	_, err = h.services.Users.Get(id)
+	uid, err := h.Sso.Api.Validate(context.Background(), &authv1.TokenRequest{Token: headerParts[1]})
 	if err != nil {
-		h.log.Error(err.Error())
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"msg": err.Error()})
+		h.log.Error("Error while validating token", err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Error while validating token"})
 		return
 	}
-	c.Set("uid", id)
+	c.Set("uid", uid.GetUid())
+	c.Next()
 }
 
 func (h *Handler) CORSMiddleware(c *gin.Context) {
