@@ -172,12 +172,12 @@ func (h *Handler) CreateTask(c *gin.Context) {
 	})
 }
 
-func (h *Handler) checkUserId(c *gin.Context) (int, error) {
+func (h *Handler) checkUserId(c *gin.Context) (int64, error) {
 	uid, ok := c.Get("uid")
 	if !ok {
 		h.log.Error("Get all tasks failed, uid is empty")
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"msg": "uid is empty"})
 		return 0, fmt.Errorf("uid is empty")
 	}
-	return uid.(int), nil
+	return uid.(int64), nil
 }
