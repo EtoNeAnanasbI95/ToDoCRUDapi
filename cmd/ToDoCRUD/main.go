@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/EtoNeAnanasbI95/ToDoCRUD"
+	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/clients/sso/grpc"
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/config"
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/handler"
 	"github.com/EtoNeAnanasbI95/ToDoCRUD/internal/repository"
@@ -39,7 +40,12 @@ func main() {
 	defer db.Close()
 	r := repository.NewRepository(db)
 	s := service.NewService(r)
-	handler := handler.NewHandler(log, s)
+	sso, err := grpc.New("localhost:8008")
+	if err != nil {
+		panic(err)
+	}
+	defer sso.Con.Close()
+	handler := handler.NewHandler(log, s, sso)
 	api := handler.InitRouts()
 	srv := new(ToDoCRUD.Server)
 	go func() {
