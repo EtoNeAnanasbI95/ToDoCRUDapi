@@ -19,9 +19,9 @@ type Task struct {
 
 // UsersTasks представляет модель задачи пользователя, как обращение к таблице MtM
 type UsersTasks struct {
-	Id     int `db:"id" json:"id"`
-	UserId int `db:"user_id" json:"user_id"`
-	TaskId int `db:"task_id" json:"task_id"`
+	Id     int   `db:"id" json:"id"`
+	UserId int64 `db:"user_id" json:"user_id"`
+	TaskId int   `db:"task_id" json:"task_id"`
 }
 
 // TaskInput представляет модель обновления задачи

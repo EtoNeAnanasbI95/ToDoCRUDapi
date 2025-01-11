@@ -20,7 +20,7 @@ func NewTasksService(rt repository.Tasks, rut repository.UsersTasks) *TasksServi
 	}
 }
 
-func (us *TasksService) Create(userId int, task *models.Task) (int, error) {
+func (us *TasksService) Create(userId int64, task *models.Task) (int, error) {
 	id, err := us.rt.Create(task)
 	if err != nil {
 		return 0, err
@@ -32,7 +32,7 @@ func (us *TasksService) Create(userId int, task *models.Task) (int, error) {
 	return id, nil
 }
 
-func (us *TasksService) Get(userId int, id int) (*models.Task, error) {
+func (us *TasksService) Get(userId int64, id int) (*models.Task, error) {
 	userTasks, err := us.rut.GetWhereUid(userId)
 	if err != nil {
 		return nil, fmt.Errorf("%s: sometimes went wrong", tasksErrorPrefix)
@@ -45,7 +45,7 @@ func (us *TasksService) Get(userId int, id int) (*models.Task, error) {
 	return nil, fmt.Errorf("%s: task not found", tasksErrorPrefix)
 }
 
-func (us *TasksService) GetAll(userId int) ([]models.Task, error) {
+func (us *TasksService) GetAll(userId int64) ([]models.Task, error) {
 	userTasks, err := us.rut.GetWhereUid(userId)
 	if err != nil {
 		return nil, fmt.Errorf("%s: sometimes went wrong, %w", tasksErrorPrefix, err)
@@ -64,7 +64,7 @@ func (us *TasksService) GetAll(userId int) ([]models.Task, error) {
 	return tasks, nil
 }
 
-func (us *TasksService) Update(userId int, id int, task *models.TaskInput) error {
+func (us *TasksService) Update(userId int64, id int, task *models.TaskInput) error {
 	if err := task.Validate(); err != nil {
 		return fmt.Errorf("%s: %w", tasksErrorPrefix, err)
 	}
@@ -80,7 +80,7 @@ func (us *TasksService) Update(userId int, id int, task *models.TaskInput) error
 	return fmt.Errorf("%s: task not found", tasksErrorPrefix)
 }
 
-func (us *TasksService) Delete(userId int, id int) error {
+func (us *TasksService) Delete(userId int64, id int) error {
 	userTasks, err := us.rut.GetWhereUid(userId)
 	if err != nil {
 		return fmt.Errorf("%s: user with id -- %d, not found, %w", tasksErrorPrefix, userId, err)

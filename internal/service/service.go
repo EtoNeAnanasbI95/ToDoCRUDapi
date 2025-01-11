@@ -14,11 +14,11 @@ type Users interface {
 }
 
 type Tasks interface {
-	Create(userId int, user *models.Task) (int, error)
-	Get(userId int, id int) (*models.Task, error)
-	GetAll(userId int) ([]models.Task, error)
-	Update(userId int, id int, task *models.TaskInput) error
-	Delete(userId int, id int) error
+	Create(userId int64, user *models.Task) (int, error)
+	Get(userId int64, id int) (*models.Task, error)
+	GetAll(userId int64) ([]models.Task, error)
+	Update(userId int64, id int, task *models.TaskInput) error
+	Delete(userId int64, id int) error
 }
 
 type Service struct {

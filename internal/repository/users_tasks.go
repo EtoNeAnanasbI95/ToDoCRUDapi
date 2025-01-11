@@ -53,7 +53,7 @@ func (ur *UsersTasksRepository) GetAll() ([]models.UsersTasks, error) {
 	return usersTasks, nil
 }
 
-func (ur *UsersTasksRepository) GetWhereUid(userId int) ([]models.UsersTasks, error) {
+func (ur *UsersTasksRepository) GetWhereUid(userId int64) ([]models.UsersTasks, error) {
 	var usersTasks []models.UsersTasks
 	query := fmt.Sprintf("SELECT * FROM %s WHERE user_id = $1", usersTasksTable)
 	if err := ur.db.Select(&usersTasks, query, userId); err != nil {
